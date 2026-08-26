@@ -138,4 +138,4 @@ document.querySelector(".nextRound").addEventListener("click", ()=>{
 
     alert("تم حساب الجولة ♠️");
 
-});});
+});
