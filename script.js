@@ -92,10 +92,6 @@ players.forEach((player)=>{
 
 });
 
-
-
-document.querySelector(".nextRound").addEventListener("click", ()=>{
-
     let cards = document.querySelectorAll(".player-card");
 
     cards.forEach((card,index)=>{
