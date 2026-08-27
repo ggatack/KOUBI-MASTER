@@ -92,6 +92,7 @@ players.forEach((player)=>{
 
 });
 });
+alert("وصل لكود الإنهاء");
 document.querySelector(".nextRound").addEventListener("click", ()=>{
 
     let cards = document.querySelectorAll(".player-card");
