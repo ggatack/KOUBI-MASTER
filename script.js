@@ -92,6 +92,11 @@ players.forEach((player)=>{
 
 });
 });
+document.querySelector(".nextRound").addEventListener("click", ()=>{
+
+    alert("تم الضغط على إنهاء الجولة");
+
+});
 alert("وصل لكود الإنهاء");
 document.querySelector(".nextRound").addEventListener("click", ()=>{
 
