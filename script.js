@@ -92,3 +92,45 @@ players.forEach((player)=>{
 
 });
 });
+document.querySelector(".nextRound").addEventListener("click", ()=>{
+
+    let cards = document.querySelectorAll(".player-card");
+
+    cards.forEach((card,index)=>{
+
+        let request = Number(card.querySelector("select").value);
+        let done = Number(card.querySelector("input").value);
+
+        let points = 0;
+
+        if(request === 0){
+
+            if(done === 0){
+                points = 5;
+            } else {
+                points = -5;
+            }
+
+        } else {
+
+            if(done >= request){
+                points = request;
+            } else {
+                points = -request;
+            }
+
+        }
+
+        game.scores[index] += points;
+
+    });
+
+
+    localStorage.setItem(
+        "koubiGame",
+        JSON.stringify(game)
+    );
+
+    alert("تم حساب الجولة ♠️");
+
+});
