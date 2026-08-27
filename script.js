@@ -1,4 +1,4 @@
-console.log("test");
+
 let winScore = 30;
 
 const winButtons = document.querySelectorAll(".win-options button");
