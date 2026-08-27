@@ -1,4 +1,4 @@
-alert("JS شغال");
+
 let winScore = 30;
 
 const winButtons = document.querySelectorAll(".win-options button");
