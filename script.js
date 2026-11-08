@@ -145,7 +145,7 @@ function finishRound() {
     const results = entries.map((entry) => {
         let points;
         if (entry.bid === 0) points = entry.done === 0 ? 5 : -5;
-        else points = entry.done >= entry.bid ? entry.bid : -entry.bid;
+        else points = entry.done >= entry.bid ? (entry.bid >= 7 ? entry.bid * 2 : entry.bid) : -entry.bid;
         game.players[entry.index].score += points;
         return { name: entry.name, bid: entry.bid, done: entry.done, points: points };
     });
