@@ -25,7 +25,8 @@ function loadGame() {
         if (!TARGETS.includes(Number(parsed.winScore))) parsed.winScore = 30;
         parsed.players = parsed.players.map((player) => ({
             name: String(player.name || "لاعب").slice(0, 24),
-            score: Number.isFinite(Number(player.score)) ? Number(player.score) : 0
+            score: Number.isFinite(Number(player.score)) ? Number(player.score) : 0,
+            lastBidZero: typeof player.lastBidZero === "boolean" ? player.lastBidZero : Boolean(parsed.history.length && parsed.history[parsed.history.length - 1].results?.find((r) => r.name === player.name)?.bid === 0)
         }));
         parsed.finished = Boolean(parsed.finished);
         return parsed;
@@ -98,6 +99,7 @@ function renderPlayers() {
         const rule = document.createElement("small"); rule.className = "rule-note";
         rule.textContent = minBid >= 4 ? "رصيدك 16 أو أكثر: أقل طلب 4." :
             minBid >= 3 ? "رصيدك 12 أو أكثر: أقل طلب 3." : "يمكنك اختيار صفر أو من 2 إلى 13.";
+        if (player.lastBidZero) rule.textContent += " طلبت صفر في الجولة السابقة؛ لا يمكنك طلبه الآن.";
         card.append(heading, bidLabel, bid, doneLabel, done, rule); area.append(card);
     });
 }
@@ -122,7 +124,9 @@ function renderHistory() {
 function renderGame() {
     $("#roundNumber").textContent = game.round;
     $("#targetScore").textContent = game.winScore;
-    renderScoreboard(); renderPlayers(); renderHistory(); roundMessage.textContent = "";
+    renderScoreboard(); renderPlayers(); renderHistory();
+    $("#undoRound").disabled = game.history.length === 0;
+    roundMessage.textContent = "";
 }
 function finishRound() {
     if (!game || game.finished) return;
@@ -138,16 +142,22 @@ function finishRound() {
             return { error: "طلب غير صحيح للاعب " + player.name + "." };
         if (bid < minimum || (minimum > 0 && bid === 0))
             return { error: "طلب " + player.name + " يجب أن يكون " + minimum + " أو أكثر." };
-        return { name: player.name, bid: bid, done: done, index: index };
+        if (bid === 0 && player.lastBidZero)
+            return { error: player.name + " لا يمكنه طلب صفر في جولتين متتاليتين." };
+        return { name: player.name, bid: bid, done: done, index: index, previousScore: player.score, previousLastBidZero: player.lastBidZero };
     });
     const invalid = entries.find((entry) => entry.error);
     if (invalid) { roundMessage.textContent = invalid.error; return; }
+    const totalDone = entries.reduce((sum, entry) => sum + entry.done, 0);
+    if (totalDone !== 13) { roundMessage.textContent = "مجموع اللمات المنجزة يجب أن يساوي 13. المجموع الحالي: " + totalDone + "."; return; }
     const results = entries.map((entry) => {
         let points;
         if (entry.bid === 0) points = entry.done === 0 ? 5 : -5;
         else points = entry.done >= entry.bid ? (entry.bid >= 7 ? entry.bid * 2 : entry.bid) : -entry.bid;
         game.players[entry.index].score += points;
-        return { name: entry.name, bid: entry.bid, done: entry.done, points: points };
+        game.players[entry.index].lastBidZero = entry.bid === 0;
+        return { name: entry.name, bid: entry.bid, done: entry.done, points: points,
+            previousScore: entry.previousScore, previousLastBidZero: entry.previousLastBidZero };
     });
     game.history.push({ number: game.round, results: results });
     game.round += 1;
@@ -158,6 +168,26 @@ function finishRound() {
         game.finished = true; saveGame(); renderScoreboard(); renderHistory(); showResult(); return;
     }
     saveGame(); renderGame();
+}
+function undoLastRound() {
+    if (!game || game.finished || !game.history.length) return;
+    if (!window.confirm("هل تريد التراجع عن آخر جولة؟ سيتم استرجاع النقاط والطلبات السابقة.")) return;
+    const lastRound = game.history.pop();
+    lastRound.results.forEach((result, index) => {
+        const player = game.players.find((item) => item.name === result.name);
+        if (!player) return;
+        if (Number.isFinite(result.previousScore)) player.score = result.previousScore;
+        else player.score -= result.points;
+        if (typeof result.previousLastBidZero === "boolean") player.lastBidZero = result.previousLastBidZero;
+        else {
+            const previous = [...game.history].reverse().flatMap((round) => round.results).find((item) => item.name === result.name);
+            player.lastBidZero = Boolean(previous && previous.bid === 0);
+        }
+    });
+    game.round = Math.max(1, lastRound.number);
+    game.finished = false;
+    delete game.winners;
+    saveGame(); renderGame(); showScreen("game");
 }
 function showResult() {
     const winners = game.winners || [];
@@ -185,6 +215,7 @@ document.querySelectorAll(".win-options button").forEach((button) => {
 });
 $("#startGame").addEventListener("click", startNewGame);
 $("#finishRound").addEventListener("click", finishRound);
+$("#undoRound").addEventListener("click", undoLastRound);
 $("#newGame").addEventListener("click", resetToSetup);
 $("#playAgain").addEventListener("click", resetToSetup);
 game = loadGame();
