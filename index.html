@@ -1,70 +1,30 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أسياد الكوبي ♠️</title>
-
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#07130f">
+<title>أسياد الكوبي ♠️</title><link rel="stylesheet" href="style.css">
 </head>
-
-<body>
-
-<div class="app">
-
-    <header>
-        <div class="logo">♠️</div>
-        <h1>أسياد الكوبي</h1>
-        <p>إدارة نقاط لعبة الكوبي</p>
-    </header>
-
-
-    <section class="setup">
-
-        <h2>إعداد لعبة جديدة</h2>
-
-        <div class="players">
-
-            <input id="player1" placeholder="اللاعب 1">
-            <input id="player2" placeholder="اللاعب 2">
-            <input id="player3" placeholder="اللاعب 3">
-            <input id="player4" placeholder="اللاعب 4">
-
-        </div>
-
-
-        <h3>حد الفوز</h3>
-
-        <div class="win-options">
-
-            <button>25</button>
-            <button class="active">30</button>
-            <button>50</button>
-
-        </div>
-
-
-        <button class="start">
-            ابدأ اللعبة ♠️
-        </button>
-
-    </section>
-    <section class="game" id="gameScreen" style="display:none;">
-
-    <h2>الجولة <span id="roundNumber">1</span> ♠️</h2>
-
-    <div id="playersArea"></div>
-
-    <button class="nextRound">
-        إنهاء الجولة
-    </button>
-
-    </section>
-
+<body><div class="app">
+<header><div class="logo">♠️</div><h1>أسياد الكوبي</h1><p>إدارة نقاط لعبة الكوبي</p></header>
+<section class="setup panel" id="setupScreen">
+<h2>إعداد لعبة جديدة</h2>
+<div class="players">
+<input id="player1" maxlength="24" placeholder="اسم اللاعب الأول" autocomplete="off">
+<input id="player2" maxlength="24" placeholder="اسم اللاعب الثاني" autocomplete="off">
+<input id="player3" maxlength="24" placeholder="اسم اللاعب الثالث" autocomplete="off">
+<input id="player4" maxlength="24" placeholder="اسم اللاعب الرابع" autocomplete="off">
 </div>
-
-
-<script src="script.js"></script>
-
-</body>
-</html>
+<h3>حد الفوز</h3><div class="win-options" role="group" aria-label="حد الفوز">
+<button type="button" data-score="25">25</button><button type="button" data-score="30" class="active">30</button><button type="button" data-score="50">50</button>
+</div>
+<button class="start primary" id="startGame" type="button">ابدأ اللعبة ♠️</button><p class="hint" id="setupMessage" aria-live="polite"></p>
+</section>
+<section class="game" id="gameScreen" hidden>
+<div class="game-top panel"><div><span class="eyebrow">الجولة الحالية</span><h2>الجولة <span id="roundNumber">1</span> ♠️</h2></div><div class="target-badge">الفوز عند <strong id="targetScore">30</strong></div></div>
+<div class="scoreboard panel"><h3>ترتيب اللاعبين</h3><div id="scoreboardList"></div></div>
+<div class="round-panel panel"><h3>طلبات الجولة</h3><p class="hint">اختر الطلب ثم أدخل عدد اللمات المنجزة لكل لاعب.</p><div id="playersArea" class="players-area"></div><button class="nextRound primary" id="finishRound" type="button">احسب الجولة وأنهِها</button><p class="hint" id="roundMessage" aria-live="polite"></p></div>
+<div class="history panel"><h3>سجل الجولات</h3><div id="historyList"><p class="empty">لم تُلعب أي جولة بعد.</p></div></div>
+<div class="game-actions"><button id="newGame" class="secondary" type="button">إنهاء / لعبة جديدة</button></div>
+</section>
+<section class="result panel" id="resultScreen" hidden><div class="trophy">🏆</div><h2 id="resultTitle">انتهت اللعبة!</h2><p id="resultText"></p><div id="finalScores"></div><button id="playAgain" class="primary" type="button">لعبة جديدة</button></section>
+</div><script src="script.js"></script></body></html>
