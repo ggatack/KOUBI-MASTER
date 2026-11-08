@@ -91,7 +91,7 @@ function renderPlayers() {
         const bidLabel = document.createElement("label"); bidLabel.htmlFor = "bid-" + index; bidLabel.textContent = "الطلب";
         const bid = document.createElement("select"); bid.id = "bid-" + index;
         const minBid = getMinimumBid(player.score);
-        if (minBid === 0) addOption(bid, 0, "0");
+        if (minBid === 0 && !player.lastBidZero) addOption(bid, 0, "0");
         for (let value = Math.max(2, minBid); value <= 13; value++) addOption(bid, value, String(value));
         const doneLabel = document.createElement("label"); doneLabel.htmlFor = "done-" + index; doneLabel.textContent = "المنجز";
         const done = document.createElement("input"); done.id = "done-" + index; done.type = "number";
